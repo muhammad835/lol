@@ -1,1 +1,127 @@
-<iframe src="https://web.cloudmoonapp.com/run-site/index.html?userid=1981358160375451648&game=com.supercell.clashroyale&android_instance_id=eyJ1c2VySWQiOiIxOTgxMzU4MTYwMzc1NDUxNjQ4IiwiYW5kcm9pZE5hbWUiOiJiZHktMTAuMTYwLjIwOC44MiIsImFuZHJvaWRJcCI6IjEwLjE2MC4yMDguODIiLCJzdmMiOiIiLCJjb29yVXJsIjoiaHR0cHM6Ly9jb29yZGluYXRvci1mdW5wbHVzLXZhLnByb2QubmVubHkuY24ifQ%3D%3D&coor_url=https%3A%2F%2Fcoor-la.prod.cloudmoonapp.com&uuid=4570090851&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJORU5MWV9URUNITk9MT0dZIiwic3ViIjoie1wiZW1haWxcIjpcIm11aGFtbWFkLm5hYnVsc2lAYWxmYWpydWxiYXNzZW0uY29tXCJ9IiwiZXhwIjoxNzYzODE5NTcxLCJqdGkiOiI1Njg1MDc2In0.hw3M5lwu-n1cTdyX8smgw0Vx53U2PZ_xHp6Vd5QHCd4&email=muhammad.nabulsi%40alfajrulbassem.com" width="100%" height="790px" frameBorder="0" style="border: 0;"></iframe><br>Brought to you by <a href="" target="_blank"></a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Classroom</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="lock-icon">🔒</div>
+        <h1>Game Launcher</h1>
+        <p class="subtitle">Enter your access code to continue</p>
+       
+        <div class="code-input">
+            <input type="text" id="accessCode" placeholder="Enter code" maxlength="3" inputmode="numeric">
+        </div>
+       
+        <div class="buttons">
+            <button class="enter-btn" onclick="checkCode()">Enter</button>
+        </div>
+       
+        <div class="error-message" id="errorMessage"></div>
+       
+        <div class="hint">
+            <strong>Hint:</strong> 
+        </div>
+    </div>
+
+    <!-- Main Game Launcher (CrazyGames) -->
+    <div id="launcherPage" class="launcher-container" style="display: none;">
+        <div class="container">
+            <h1>🎮 Crazy Games Launcher</h1>
+            <p class="description">Enter any game name from Crazy Games or paste a CrazyGames URL to launch it directly in your browser.</p>
+           
+            <div class="game-input">
+                <input type="text" id="gameName" placeholder="Enter game name or CrazyGames URL">
+                <button id="launchButton" onclick="launchGame()">Launch Game</button>
+            </div>
+           
+            <h2>Currently Playing: <span id="currentGame">Ragdoll Archers</span></h2>
+           
+            <div class="game-frame">
+                <iframe id="gameFrame" src="https://games.crazygames.com/en_US/ragdoll-archers/index.html" allowfullscreen></iframe>
+            </div>
+           
+            <div class="instructions">
+                <h2>📋 How to Use:</h2>
+                <ul>
+                    <li>Enter the name of any game available on Crazy Games (e.g. "Ragdoll Archers", "Rooftop Snipers")</li>
+                    <li>The launcher will automatically format game names (replace spaces with hyphens)</li>
+                    <li>Click "Launch Game" or press Enter to load the game</li>
+                    <li>Enjoy playing directly in your browser!</li>
+                </ul>
+                <p class="example">Example: "Rooftop Snipers" becomes "rooftop-snipers"</p>
+                <p class="example">Or paste a full URL like: https://www.crazygames.com/game/grow-a-garden---growden-io</p>
+            </div>
+           
+            <footer>
+                <p>Note: This launcher works with games that follow the standard Crazy Games URL structure.</p>
+                <button class="back-btn" onclick="showLogin()">← Back to Login</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Growden Fullscreen -->
+    <div id="growdenPage" class="fullscreen-container" style="display: none;">
+        <div class="header">
+            <div class="game-title">🌱 Growden.io</div>
+            <button class="back-btn" onclick="showLogin()">← Back to Login</button>
+        </div>
+       
+        <div class="fullscreen-frame">
+            <iframe
+                id="growdenFrame"
+                src="https://growden.io/"
+                allowfullscreen
+                scrolling="no">
+            </iframe>
+        </div>
+    </div>
+
+    <!-- Roblox Fullscreen -->
+    <div id="robloxPage" class="fullscreen-container" style="display: none;">
+        <div class="header">
+            <div class="game-title">🎮 Roblox Cloud Gaming</div>
+            <button class="back-btn" onclick="showLogin()">← Back to Login</button>
+        </div>
+       
+        <div class="fullscreen-frame">
+            <iframe 
+                id="robloxFrame"
+                src="https://www.myandroid.org/playonline/androidemulator.php" 
+                allowfullscreen
+                scrolling="no">
+            </iframe>
+        </div>
+    </div>
+
+    <!-- CloudMoon Fullscreen -->
+    <div id="cloudmoonPage" class="fullscreen-container" style="display: none;">
+        <div class="header">
+            <div class="game-title">☁️ CloudMoon Gaming</div>
+            <button class="back-btn" onclick="showLogin()">← Back to Login</button>
+        </div>
+       
+        <div class="fullscreen-frame">
+            <!--
+                sandbox: intentionally does NOT include allow-popups to prevent the iframe from opening new windows.
+                We allow scripts and same-origin to keep functionality where possible, but blocking popups forces
+                links that would open new tabs to fail inside the iframe — our parent override will intercept many calls.
+            -->
+            <iframe 
+                id="cloudmoonFrame"
+                src="about:blank"
+                allowfullscreen
+                scrolling="no"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-modals"
+                allow="autoplay; fullscreen; gamepad; microphone; camera; clipboard-read; clipboard-write">
+            </iframe>
+        </div>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
