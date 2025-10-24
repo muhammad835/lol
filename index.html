@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Classroom</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Cloud Game Launcher</title>
+    <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
     <!-- Login Page -->
@@ -12,19 +12,19 @@
         <div class="lock-icon">🔒</div>
         <h1>Game Launcher</h1>
         <p class="subtitle">Enter your access code to continue</p>
-       
+
         <div class="code-input">
-            <input type="text" id="accessCode" placeholder="Enter code" maxlength="3" inputmode="numeric">
+            <input type="text" id="accessCode" placeholder="Enter code" maxlength="3" inputmode="numeric" />
         </div>
-       
+
         <div class="buttons">
-            <button class="enter-btn" onclick="checkCode()">Enter</button>
+            <button class="enter-btn" id="enterBtn">Enter</button>
         </div>
-       
+
         <div class="error-message" id="errorMessage"></div>
-       
+
         <div class="hint">
-            <strong>Hint:</strong> 
+            <strong>Hint:</strong>
         </div>
     </div>
 
@@ -33,18 +33,18 @@
         <div class="container">
             <h1>🎮 Crazy Games Launcher</h1>
             <p class="description">Enter any game name from Crazy Games or paste a CrazyGames URL to launch it directly in your browser.</p>
-           
+
             <div class="game-input">
-                <input type="text" id="gameName" placeholder="Enter game name or CrazyGames URL">
-                <button id="launchButton" onclick="launchGame()">Launch Game</button>
+                <input type="text" id="gameName" placeholder="Enter game name or CrazyGames URL" />
+                <button id="launchButton">Launch Game</button>
             </div>
-           
+
             <h2>Currently Playing: <span id="currentGame">Ragdoll Archers</span></h2>
-           
-            <div class="game-frame">
-                <iframe id="gameFrame" src="https://games.crazygames.com/en_US/ragdoll-archers/index.html" allowfullscreen></iframe>
+
+            <div class="game-frame" id="gameFrameContainer">
+                <iframe id="gameFrame" src="https://games.crazygames.com/en_US/ragdoll-archers/index.html" allowfullscreen scrolling="yes"></iframe>
             </div>
-           
+
             <div class="instructions">
                 <h2>📋 How to Use:</h2>
                 <ul>
@@ -56,10 +56,10 @@
                 <p class="example">Example: "Rooftop Snipers" becomes "rooftop-snipers"</p>
                 <p class="example">Or paste a full URL like: https://www.crazygames.com/game/grow-a-garden---growden-io</p>
             </div>
-           
+
             <footer>
                 <p>Note: This launcher works with games that follow the standard Crazy Games URL structure.</p>
-                <button class="back-btn" onclick="showLogin()">← Back to Login</button>
+                <button class="back-btn" id="backToLoginFromLauncher">← Back to Login</button>
             </footer>
         </div>
     </div>
@@ -68,16 +68,17 @@
     <div id="growdenPage" class="fullscreen-container" style="display: none;">
         <div class="header">
             <div class="game-title">🌱 Growden.io</div>
-            <button class="back-btn" onclick="showLogin()">← Back to Login</button>
+            <button class="back-btn" id="backToLoginFromGrowden">← Back to Login</button>
         </div>
-       
+
         <div class="fullscreen-frame">
             <iframe
                 id="growdenFrame"
                 src="https://growden.io/"
                 allowfullscreen
-                scrolling="no">
-            </iframe>
+                scrolling="yes"
+                sandbox="allow-scripts allow-forms allow-same-origin allow-modals"
+            ></iframe>
         </div>
     </div>
 
@@ -85,16 +86,17 @@
     <div id="robloxPage" class="fullscreen-container" style="display: none;">
         <div class="header">
             <div class="game-title">🎮 Roblox Cloud Gaming</div>
-            <button class="back-btn" onclick="showLogin()">← Back to Login</button>
+            <button class="back-btn" id="backToLoginFromRoblox">← Back to Login</button>
         </div>
-       
+
         <div class="fullscreen-frame">
-            <iframe 
+            <iframe
                 id="robloxFrame"
-                src="https://www.myandroid.org/playonline/androidemulator.php" 
+                src="https://www.myandroid.org/playonline/androidemulator.php"
                 allowfullscreen
-                scrolling="no">
-            </iframe>
+                scrolling="yes"
+                sandbox="allow-scripts allow-forms allow-same-origin allow-modals"
+            ></iframe>
         </div>
     </div>
 
@@ -102,23 +104,20 @@
     <div id="cloudmoonPage" class="fullscreen-container" style="display: none;">
         <div class="header">
             <div class="game-title">☁️ CloudMoon Gaming</div>
-            <button class="back-btn" onclick="showLogin()">← Back to Login</button>
+            <button class="back-btn" id="backToLoginFromCloudmoon">← Back to Login</button>
         </div>
-       
+
         <div class="fullscreen-frame">
-            <!--
-                sandbox: intentionally does NOT include allow-popups to prevent the iframe from opening new windows.
-                We allow scripts and same-origin to keep functionality where possible, but blocking popups forces
-                links that would open new tabs to fail inside the iframe — our parent override will intercept many calls.
-            -->
-            <iframe 
+            <!-- Sandbox intentionally excludes allow-popups to prevent iframe from opening new tabs.
+                 We allow scripts and same-origin to retain functionality where possible. -->
+            <iframe
                 id="cloudmoonFrame"
                 src="about:blank"
                 allowfullscreen
-                scrolling="no"
+                scrolling="yes"
                 sandbox="allow-scripts allow-same-origin allow-forms allow-modals"
-                allow="autoplay; fullscreen; gamepad; microphone; camera; clipboard-read; clipboard-write">
-            </iframe>
+                allow="autoplay; fullscreen; gamepad; microphone; camera; clipboard-read; clipboard-write"
+            ></iframe>
         </div>
     </div>
 
