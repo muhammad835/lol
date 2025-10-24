@@ -3,25 +3,25 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Full-screen iframe host</title>
+  <title>Fullscreen iframe host</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Fullscreen iframe (replace src with your app URL) -->
+  <!-- Full-viewport iframe (srcdoc is set from scripts.js) -->
   <iframe
     id="app-frame"
-    src="sample-content.html"
     title="App Frame"
     allow="fullscreen"
+    allowfullscreen
     frameborder="0"
   ></iframe>
 
-  <!-- Controls (optional) -->
+  <!-- Small floating controls -->
   <div id="controls" aria-hidden="false">
-    <button id="fullscreenBtn" type="button">Toggle Fullscreen</button>
-    <button id="openNewTab" type="button">Open in new tab</button>
+    <button id="fullscreenBtn" type="button" aria-label="Toggle fullscreen">Toggle Fullscreen</button>
+    <button id="openNewTab" type="button" aria-label="Open iframe content in new tab">Open in new tab</button>
   </div>
 
-  <script src="script.js"></script>
+  <script src="scripts.js"></script>
 </body>
 </html>
