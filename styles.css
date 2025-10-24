@@ -1,1 +1,350 @@
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+    color: white;
+    overflow: hidden;
+}
+
+/* Login Page Styles */
+.login-container {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    backdrop-filter: blur(10px);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.lock-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+h1 {
+    color: #ff6b6b;
+    margin-bottom: 10px;
+    font-size: 2.5rem;
+    text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+}
+
+.subtitle {
+    color: #ccc;
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+}
+
+.code-input {
+    margin-bottom: 20px;
+}
+
+#accessCode {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.5rem;
+    text-align: center;
+    border: 2px solid #4fc3f7;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    transition: all 0.3s ease;
+    letter-spacing: 3px;
+}
+
+#accessCode:focus {
+    outline: none;
+    border-color: #ff6b6b;
+    box-shadow: 0 0 15px rgba(255, 107, 107, 0.5);
+}
+
+#accessCode::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: normal;
+}
+
+.buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.enter-btn {
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    background: linear-gradient(135deg, #ff6b6b, #ff5252);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+}
+
+.enter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5);
+}
+
+.enter-btn:active {
+    transform: translateY(0);
+}
+
+.error-message {
+    color: #ff6b6b;
+    margin-top: 15px;
+    font-size: 0.9rem;
+    min-height: 20px;
+    font-weight: bold;
+}
+
+.hint {
+    color: #888;
+    font-size: 0.85rem;
+    margin-top: 20px;
+    line-height: 1.5;
+}
+
+/* Launcher Page Styles */
+.launcher-container {
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    min-height: 100vh;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.container {
+    max-width: 1200px;
+    width: 100%;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    margin: 0 auto;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.description {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+.game-input {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+#gameName {
+    padding: 15px 20px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 50px;
+    width: 300px;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+#launchButton {
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+}
+
+#launchButton:hover {
+    background: #ff5252;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+#launchButton:active {
+    transform: translateY(0);
+}
+
+.game-frame {
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    margin-top: 20px;
+    background: #000;
+}
+
+.game-frame iframe {
+    width: 100%;
+    height: 600px;
+    border: none;
+}
+
+.instructions {
+    margin-top: 30px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: left;
+}
+
+.instructions h2 {
+    color: #4fc3f7;
+    margin-bottom: 15px;
+}
+
+.instructions ul {
+    margin-left: 20px;
+    line-height: 2;
+}
+
+.instructions li {
+    margin-bottom: 10px;
+}
+
+.example {
+    color: #aaa;
+    font-style: italic;
+    margin-top: 10px;
+}
+
+footer {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+footer p {
+    margin-bottom: 15px;
+    color: #ccc;
+}
+
+.back-btn {
+    padding: 12px 25px;
+    font-size: 1rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.back-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.back-btn:active {
+    transform: translateY(0);
+}
+
+/* Fullscreen Container Styles */
+.fullscreen-container {
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+.header {
+    background: rgba(0, 0, 0, 0.95);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #ff6b6b;
+    height: 50px;
+    z-index: 1000;
+    position: relative;
+}
+
+.game-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #4fc3f7;
+}
+
+.fullscreen-frame {
+    width: 100%;
+    height: calc(100vh - 50px);
+    overflow: hidden;
+    position: relative;
+}
+
+.fullscreen-frame iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+
+/* Shake Animation */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+    20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+    
+    .description {
+        font-size: 1rem;
+    }
+    
+    #gameName {
+        width: 100%;
+    }
+    
+    .game-frame iframe {
+        height: 400px;
+    }
+    
+    .game-title {
+        font-size: 1rem;
+    }
+}
