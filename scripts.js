@@ -1,380 +1,170 @@
-// Page management
-let currentPage = 'login';
-let openedWindow = null;
-let checkInterval = null;
+// scripts.js
+// - Sets a scrollable srcdoc into the iframe (so this single page contains both host & demo content).
+// - Keeps the iframe sized to the visible viewport using visualViewport where available (fixes mobile 100vh issues).
+// - Adds a fullscreen toggle that targets the iframe element.
+// - Provides "Open in new tab" by creating a blob URL of the iframe HTML (works even when using srcdoc).
 
-// Keep a reference to the original window.open (in case we need it)
-const originalWindowOpen = window.open;
+(function () {
+  const iframe = document.getElementById('app-frame');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  const openNewTabBtn = document.getElementById('openNewTab');
 
-// Defensive window.open override: intercept popup attempts when on CloudMoon,
-// set the CloudMoon iframe src to the requested URL instead of opening a new tab/window,
-// and return a fake window object so the caller thinks a window opened.
-(function() {
-    window.open = function(url, target, features) {
-        try {
-            console.log('🔍 window.open called with URL:', url, 'target:', target, 'features:', features);
-        } catch (e) {}
+  if (!iframe) {
+    console.error('No iframe with id "app-frame" found.');
+    return;
+  }
 
-        // If we are on the CloudMoon page, intercept and load the URL into the iframe
-        if ((currentPage === 'cloudmoon' || currentPage === 'cloudmoon') && url) {
-            try {
-                const cloudmoonFrame = document.getElementById('cloudmoonFrame');
-                if (cloudmoonFrame) {
-                    console.log('✅ Intercepting window.open for CloudMoon. Loading in iframe:', url);
-                    // Sanitize/normalize: if the URL is not absolute, try to construct it, else use as-is
-                    try {
-                        const parsed = new URL(url, window.location.href);
-                        cloudmoonFrame.src = parsed.href;
-                    } catch (e) {
-                        cloudmoonFrame.src = url;
-                    }
-                }
-
-                // Return a "fake" window object so scripts that expect a window handle keep working.
-                const fake = {
-                    closed: false,
-                    close: function() { this.closed = true; },
-                    focus: function() {},
-                    blur: function() {},
-                    postMessage: function() {}
-                };
-
-                // Keep a reference and periodically try to ensure it's blank (best-effort)
-                openedWindow = fake;
-                if (checkInterval) clearInterval(checkInterval);
-                checkInterval = setInterval(() => {
-                    try {
-                        if (openedWindow && openedWindow.closed === false) {
-                            // No-op: we cannot access cross-origin real windows, but keep this for future checks
-                        }
-                    } catch (e) {}
-                }, 1000);
-
-                return fake;
-            } catch (e) {
-                console.error('Error intercepting window.open:', e);
-                // Fall back to not opening a new window
-                return {
-                    closed: false,
-                    close: function() { this.closed = true; },
-                    focus: function() {},
-                    blur: function() {},
-                    postMessage: function() {}
-                };
-            }
-        }
-
-        // For other pages, call the original behavior
-        try {
-            return originalWindowOpen.call(window, url, target, features);
-        } catch (e) {
-            console.warn('original window.open failed, returning fake window:', e);
-            return {
-                closed: false,
-                close: function() { this.closed = true; },
-                focus: function() {},
-                blur: function() {},
-                postMessage: function() {}
-            };
-        }
-    };
-})();
-
-// Check access code and show appropriate page
-function checkCode() {
-    const code = document.getElementById('accessCode').value.trim();
-    const errorMessage = document.getElementById('errorMessage');
-   
-    switch(code) {
-        case '918':
-            showPage('launcher');
-            errorMessage.textContent = '';
-            break;
-        case '819':
-            showPage('growden');
-            errorMessage.textContent = '';
-            break;
-        case '818':
-            showPage('roblox');
-            errorMessage.textContent = '';
-            break;
-        // Accept both 919 and 999 for CloudMoon so common variants work
-        case '919':
-        case '999':
-            showPage('cloudmoon');
-            errorMessage.textContent = '';
-            break;
-        default:
-            errorMessage.textContent = '❌ Invalid code. Please try again.';
-            const accessCodeEl = document.getElementById('accessCode');
-            if (accessCodeEl) {
-                accessCodeEl.style.animation = 'shake 0.5s';
-                setTimeout(() => {
-                    errorMessage.textContent = '';
-                    accessCodeEl.style.animation = '';
-                }, 3000);
-            }
+  // The inner page HTML (srcdoc). Because this is embedded as srcdoc, it's same-origin with the parent (no sandbox),
+  // so parent can access iframe.contentDocument if needed.
+  const innerHTML = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Iframe inner content (scrollable)</title>
+  <style>
+    :root { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    html, body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 20px;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg,#fff,#eef6ff);
+      color: #0b1220;
+      line-height: 1.45;
+      min-height: 100%;
+      height: auto;
+      overflow: auto; /* allow scrolling inside the iframe */
+      -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
     }
-}
+    .wrap { max-width: 900px; margin: 0 auto; }
+    header { font-size: 20px; margin-bottom: 10px; font-weight: 600; }
+    p { margin-bottom: 12px; }
+    .long { height: 3000px; background: linear-gradient(#ffffff66,#dfefff44); border-radius: 8px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>Iframe inner page — scroll me</header>
+    <p>This document is embedded via <code>srcdoc</code>. It is intentionally long so you can test scrolling inside the iframe.</p>
+    <p>If you replace this with your app, ensure that app's CSS does not force <code>overflow: hidden</code> on html/body unless you want to disable scrolling.</p>
+    <div class="long"></div>
+  </div>
+</body>
+</html>`.trim();
 
-// Show specific page
-function showPage(page) {
-    currentPage = page;
-   
-    // Hide all pages
-    const ids = ['loginPage','launcherPage','growdenPage','robloxPage','cloudmoonPage'];
-    ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
+  // Assign the srcdoc so the iframe becomes immediately populated.
+  try {
+    iframe.srcdoc = innerHTML;
+  } catch (e) {
+    // Some older browsers may not support srcdoc attribute; fallback to writing the document after load.
+    iframe.addEventListener('load', function fallbackWrite() {
+      try {
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        doc.open();
+        doc.write(innerHTML);
+        doc.close();
+      } catch (err) {
+        console.warn('Unable to write iframe content:', err);
+      } finally {
+        iframe.removeEventListener('load', fallbackWrite);
+      }
     });
-   
-    // Show requested page
-    switch(page) {
-        case 'login':
-            const loginEl = document.getElementById('loginPage');
-            if (loginEl) loginEl.style.display = 'block';
-            const ac = document.getElementById('accessCode');
-            if (ac) { ac.value = ''; ac.focus(); }
-            break;
-        case 'launcher':
-            const launcherEl = document.getElementById('launcherPage');
-            if (launcherEl) launcherEl.style.display = 'block';
-            const gameName = document.getElementById('gameName');
-            if (gameName) gameName.focus();
-            break;
-        case 'growden':
-            const growdenEl = document.getElementById('growdenPage');
-            if (growdenEl) growdenEl.style.display = 'block';
-            const growdenFrame = document.getElementById('growdenFrame');
-            if (growdenFrame) growdenFrame.src = 'https://growden.io/';
-            break;
-        case 'roblox':
-            const robloxEl = document.getElementById('robloxPage');
-            if (robloxEl) robloxEl.style.display = 'block';
-            const robloxFrame = document.getElementById('robloxFrame');
-            if (robloxFrame) robloxFrame.src = 'https://www.myandroid.org/playonline/androidemulator.php';
-            break;
-        case 'cloudmoon':
-            const cloudmoonEl = document.getElementById('cloudmoonPage');
-            if (cloudmoonEl) cloudmoonEl.style.display = 'block';
-            const cloudmoonFrame = document.getElementById('cloudmoonFrame');
-            if (cloudmoonFrame) {
-                // Start with the CloudMoon site — some sites may not like sandboxing, but sandbox reduces popups
-                cloudmoonFrame.src = 'https://web.cloudmoonapp.com/';
-            }
-            
-            console.log('🎮 CloudMoon page loaded');
-            console.log('🔒 Popup interception is active');
-            break;
-    }
-}
+    // set a blank src to trigger the load
+    iframe.src = 'about:blank';
+  }
 
-// Show login page
-function showLogin() {
-    showPage('login');
-}
-
-// Function to launch a game based on user input
-function launchGame() {
-    const gameInput = document.getElementById('gameName');
-    if (!gameInput) return;
-    const input = gameInput.value.trim();
-   
-    if (!input) {
-        alert('⚠️ Please enter a game name or URL');
-        gameInput.focus();
-        return;
-    }
-   
-    let newSrc;
-    let gameTitle;
-   
-    if (input.includes('crazygames.com/game/')) {
-        try {
-            const url = new URL(input);
-            const pathParts = url.pathname.split('/');
-            const gameIdentifier = pathParts[pathParts.length - 1] || '';
-           
-            const gameNameForTitle = gameIdentifier.split('---')[0].replace(/-/g, ' ');
-            gameTitle = gameNameForTitle.replace(/\b\w/g, l => l.toUpperCase());
-           
-            const gameNameForUrl = gameNameForTitle.replace(/\s+/g, '-').toLowerCase();
-            newSrc = `https://games.crazygames.com/en_US/${gameNameForUrl}/index.html`;
-        } catch (e) {
-            alert('❌ Invalid URL format. Please check the URL and try again.');
-            return;
-        }
-    }
-    else if (input.includes('games.crazygames.com') || input.includes('crazygames.com')) {
-        try {
-            // If it's already a games.crazygames link, use it directly or normalize it
-            const parsed = new URL(input);
-            if (parsed.hostname.includes('games.crazygames.com')) {
-                newSrc = parsed.href;
-            } else {
-                // If it's the www.crazygames.com/game/* path, try to reformulate
-                const pathParts = parsed.pathname.split('/');
-                const identifier = pathParts[pathParts.length - 1] || '';
-                const gameNameForUrl = identifier.split('---')[0].replace(/\s+/g, '-').toLowerCase();
-                newSrc = `https://games.crazygames.com/en_US/${gameNameForUrl}/index.html`;
-            }
-
-            const urlParts = newSrc.split('/');
-            gameTitle = urlParts[urlParts.length - 2] || 'Unknown Game';
-            gameTitle = gameTitle.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-        } catch (e) {
-            newSrc = input;
-            gameTitle = 'Custom URL';
-        }
-    }
-    else {
-        const formattedGameName = input.replace(/\s+/g, '-').toLowerCase();
-        newSrc = `https://games.crazygames.com/en_US/${formattedGameName}/index.html`;
-        gameTitle = input;
-    }
-   
-    const gameFrame = document.getElementById('gameFrame');
-    if (gameFrame) {
-        gameFrame.src = newSrc;
-    }
-    const currentGameEl = document.getElementById('currentGame');
-    if (currentGameEl) currentGameEl.textContent = gameTitle;
-   
-    console.log(`🎮 Loading game: ${gameTitle}`);
-    console.log(`📍 URL: ${newSrc}`);
-}
-
-// Setup event listeners and initialization in DOMContentLoaded
-document.addEventListener('DOMContentLoaded', function() {
-    // Focus access code
-    const accessCodeEl = document.getElementById('accessCode');
-    if (accessCodeEl) accessCodeEl.focus();
-
-    const currentGame = document.getElementById('currentGame');
-    if (currentGame) currentGame.textContent = 'Ragdoll Archers';
-   
-    const gameFrame = document.getElementById('gameFrame');
-    if (gameFrame) {
-        gameFrame.addEventListener('load', function() {
-            console.log('✅ Game loaded successfully');
-        });
-        gameFrame.addEventListener('error', function() {
-            console.error('❌ Failed to load game');
-            alert('Failed to load the game. Please check the game name and try again.');
-        });
-    }
-   
-    const robloxFrame = document.getElementById('robloxFrame');
-    if (robloxFrame) {
-        robloxFrame.addEventListener('load', function() {
-            console.log('✅ Roblox cloud gaming loaded');
-        });
-        robloxFrame.addEventListener('error', function() {
-            console.error('❌ Failed to load Roblox');
-        });
-    }
-   
-    const growdenFrame = document.getElementById('growdenFrame');
-    if (growdenFrame) {
-        growdenFrame.addEventListener('load', function() {
-            console.log('✅ Growden.io loaded');
-        });
-        growdenFrame.addEventListener('error', function() {
-            console.error('❌ Failed to load Growden.io');
-        });
-    }
-    
-    const cloudmoonFrame = document.getElementById('cloudmoonFrame');
-    if (cloudmoonFrame) {
-        cloudmoonFrame.addEventListener('load', function() {
-            console.log('✅ CloudMoon frame loaded (src=' + cloudmoonFrame.src + ')');
-        });
-        cloudmoonFrame.addEventListener('error', function() {
-            console.error('❌ Failed to load CloudMoon');
-        });
-    }
-
-    // Allow Enter key for login
-    if (accessCodeEl) {
-        accessCodeEl.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                checkCode();
-            }
-        });
-
-        // Auto-clear access code on focus
-        accessCodeEl.addEventListener('focus', function() {
-            this.select();
-        });
-    }
-
-    // Game name Enter and focus effects
-    const gameNameEl = document.getElementById('gameName');
-    if (gameNameEl) {
-        gameNameEl.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                launchGame();
-            }
-        });
-
-        gameNameEl.addEventListener('focus', function() {
-            this.style.transform = 'scale(1.02)';
-            this.style.transition = 'transform 0.2s ease';
-        });
-
-        gameNameEl.addEventListener('blur', function() {
-            this.style.transform = 'scale(1)';
-        });
-    }
-});
-
-// Prevent accidental page navigation
-window.addEventListener('beforeunload', function(e) {
-    if (currentPage !== 'login') {
-        e.preventDefault();
-        e.returnValue = '';
-        return 'Are you sure you want to leave? Your game progress may be lost.';
-    }
-});
-
-// Add keyboard shortcuts
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape' && 
-        event.target.tagName !== 'INPUT' && 
-        currentPage !== 'login') {
-        if (confirm('Return to login page?')) {
-            showLogin();
-        }
-    }
-   
-    if (event.key === 'F11') {
-        console.log('💡 Tip: Press F11 to toggle fullscreen mode');
-    }
-});
-
-// Console welcome message
-console.log('%c🎮 Game Launcher Initialized', 'color: #4fc3f7; font-size: 20px; font-weight: bold;');
-console.log('%cAccess Codes:', 'color: #ff6b6b; font-size: 14px; font-weight: bold;');
-console.log('%c918 - CrazyGames Launcher', 'color: #4fc3f7; font-size: 12px;');
-console.log('%c819 - Growden.io', 'color: #4fc3f7; font-size: 12px;');
-console.log('%c818 - Roblox Cloud Gaming', 'color: #4fc3f7; font-size: 12px;');
-console.log('%c919/999 - CloudMoon Gaming', 'color: #4fc3f7; font-size: 12px;');
-console.log('%c\nPress ESC to return to login', 'color: #888; font-size: 10px;');
-
-// Listen for messages from iframes
-window.addEventListener('message', function(event) {
+  // Keep a CSS variable --vh up-to-date to avoid mobile 100vh issues.
+  function updateVhVar() {
     try {
-        console.log('📨 Message received:', event.data);
-    } catch (e) {}
-    
-    // If an iframe posts a URL string, load it into CloudMoon iframe when appropriate
-    if (typeof event.data === 'string' && (event.data.startsWith('http://') || event.data.startsWith('https://'))) {
-        if (currentPage === 'cloudmoon') {
-            const cloudmoonFrame = document.getElementById('cloudmoonFrame');
-            if (cloudmoonFrame) {
-                console.log('✅ Loading URL from message into CloudMoon iframe:', event.data);
-                cloudmoonFrame.src = event.data;
-            }
-        }
+      const height = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+      const vh = height * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+      // Also set explicit iframe pixel size to be extra-reliable
+      iframe.style.height = `calc(var(--vh, 1vh) * 100)`;
+      iframe.style.width = window.innerWidth + 'px';
+    } catch (e) {
+      console.warn('updateVhVar error', e);
     }
-});
+  }
+
+  updateVhVar();
+  window.addEventListener('resize', updateVhVar, { passive: true });
+  window.addEventListener('orientationchange', updateVhVar, { passive: true });
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', updateVhVar, { passive: true });
+    window.visualViewport.addEventListener('scroll', updateVhVar, { passive: true });
+  }
+
+  // Toggle fullscreen on the iframe element itself for best UX.
+  async function toggleFullscreen() {
+    try {
+      // If we are currently in fullscreen, exit
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
+        if (document.exitFullscreen) await document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        return;
+      }
+
+      // Request fullscreen on the iframe element (preferred).
+      if (iframe.requestFullscreen) {
+        await iframe.requestFullscreen({ navigationUI: 'hide' });
+      } else if (iframe.webkitRequestFullscreen) {
+        iframe.webkitRequestFullscreen();
+      } else if (document.documentElement.requestFullscreen) {
+        // Fallback: make the whole document fullscreen
+        await document.documentElement.requestFullscreen();
+      } else {
+        console.warn('Fullscreen API is not supported by this browser.');
+      }
+    } catch (err) {
+      console.warn('Error toggling fullscreen:', err);
+    }
+  }
+
+  fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+  // Open the iframe content in a new tab by making a blob of the HTML.
+  openNewTabBtn.addEventListener('click', function () {
+    try {
+      const blob = new Blob([innerHTML], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      // Open in a new tab
+      const w = window.open(url, '_blank', 'noopener,noreferrer');
+      if (w) {
+        // Release the object URL after a short delay to ensure the new tab has loaded it.
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+      } else {
+        console.warn('Popup blocked — could not open new tab.');
+      }
+    } catch (err) {
+      console.warn('Could not open new tab:', err);
+    }
+  });
+
+  // After the iframe loads, try to ensure its inner document allows scrolling (works only when same-origin).
+  iframe.addEventListener('load', function () {
+    try {
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+      if (doc) {
+        // Ensure inner document isn't forcing overflow:hidden on html/body
+        doc.documentElement.style.minHeight = '100%';
+        doc.documentElement.style.height = 'auto';
+        doc.documentElement.style.overflow = 'auto';
+        doc.body.style.minHeight = '100%';
+        doc.body.style.height = 'auto';
+        doc.body.style.overflow = 'auto';
+      }
+    } catch (e) {
+      // Cross-origin => cannot access — that's OK; inner page controls its own scrolling.
+    }
+  });
+
+  // Keyboard accessibility: Ctrl/Cmd + Shift + F toggles fullscreen.
+  window.addEventListener('keydown', (ev) => {
+    if ((ev.key === 'F' || ev.key === 'f') && (ev.ctrlKey || ev.metaKey) && ev.shiftKey) {
+      ev.preventDefault();
+      toggleFullscreen();
+    }
+  });
+})();
