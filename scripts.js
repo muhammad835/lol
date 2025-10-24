@@ -1,29 +1,45 @@
-// Access Codes
+// -----------------------------
+// ACCESS CODES
+// -----------------------------
 const CODES = {
-  LAUNCHER: '918',
-  GROWDEN:  '819',
-  ROBLOX:   '818',
-  CLOUDMOON:'919',
+  LAUNCHER: '918',  // CrazyGames
+  GROWDEN:  '819',  // Growden.io
+  ROBLOX:   '818',  // Roblox
+  CLOUDMOON:'919',  // CloudMoon Gaming
 };
 
 let currentPage = 'login';
 const $ = (id) => document.getElementById(id);
 
-// IMPORTANT: Hard block any popups from your *top page* too.
-(function hardBlockPopupsOnTop() {
+// -----------------------------
+//  SAFETY: BLOCK POPUPS EVERYWHERE
+// -----------------------------
+(function hardBlockPopups() {
   const originalOpen = window.open;
-  window.open = function() {
-    console.log('🚫 Popup attempt on top window blocked.');
-    return { closed:true, close(){}, focus(){}, blur(){}, postMessage(){} };
+  window.open = function(url, target, features) {
+    console.warn('🚫 Popup attempt blocked:', url || 'unknown');
+    // Return a fake window so pages don’t crash
+    return {
+      closed: true,
+      close() {},
+      focus() {},
+      blur() {},
+      postMessage() {}
+    };
   };
 })();
 
-// Page switching
+// -----------------------------
+// PAGE SWITCHING LOGIC
+// -----------------------------
 function showPage(page) {
   currentPage = page;
 
-  ['loginPage','launcherPage','growdenPage','robloxPage','cloudmoonPage']
-    .forEach(id => { const el = $(id); if (el) el.style.display = 'none'; });
+  // Hide all pages first
+  ['loginPage', 'launcherPage', 'growdenPage', 'robloxPage', 'cloudmoonPage'].forEach(id => {
+    const el = $(id);
+    if (el) el.style.display = 'none';
+  });
 
   switch (page) {
     case 'login':
@@ -34,8 +50,8 @@ function showPage(page) {
 
     case 'launcher':
       $('launcherPage').style.display = 'block';
-      $('currentGame').textContent = 'Ragdoll Archers';
       $('gameFrame').src = 'https://games.crazygames.com/en_US/ragdoll-archers/index.html';
+      $('currentGame').textContent = 'Ragdoll Archers';
       $('gameName').focus();
       break;
 
@@ -51,36 +67,49 @@ function showPage(page) {
 
     case 'cloudmoon':
       $('cloudmoonPage').style.display = 'block';
-      // POPUPS BLOCKED by iframe sandbox (no allow-popups). Just load homepage here:
+      // Load CloudMoon, sandboxed to prevent any popups or new tabs
       $('cloudmoonFrame').src = 'https://web.cloudmoonapp.com/';
-      console.log('🌙 CloudMoon loaded with sandbox — popups are blocked.');
+      console.log('🌙 CloudMoon loaded in sandbox — popups are blocked.');
       break;
   }
 }
 
-function showLogin() { showPage('login'); }
+function showLogin() {
+  showPage('login');
+}
 
-// Login
+// -----------------------------
+//  ACCESS CODE CHECK
+// -----------------------------
 function checkCode() {
   const code = $('accessCode').value.trim();
   const error = $('errorMessage');
 
   if (code === CODES.LAUNCHER) {
-    error.textContent = ''; showPage('launcher');
+    showPage('launcher');
+    error.textContent = '';
   } else if (code === CODES.GROWDEN) {
-    error.textContent = ''; showPage('growden');
+    showPage('growden');
+    error.textContent = '';
   } else if (code === CODES.ROBLOX) {
-    error.textContent = ''; showPage('roblox');
+    showPage('roblox');
+    error.textContent = '';
   } else if (code === CODES.CLOUDMOON) {
-    error.textContent = ''; showPage('cloudmoon');
+    showPage('cloudmoon');
+    error.textContent = '';
   } else {
     error.textContent = '❌ Invalid code. Please try again.';
     $('accessCode').style.animation = 'shake 0.5s';
-    setTimeout(() => { $('accessCode').style.animation = ''; error.textContent = ''; }, 1600);
+    setTimeout(() => {
+      $('accessCode').style.animation = '';
+      error.textContent = '';
+    }, 1600);
   }
 }
 
-// CrazyGames launcher
+// -----------------------------
+// CRAZYGAMES LAUNCHER LOGIC
+// -----------------------------
 function launchGame() {
   const inputEl = $('gameName');
   const input = (inputEl.value || '').trim();
@@ -93,6 +122,7 @@ function launchGame() {
   let url = '';
   let title = '';
 
+  // Case 1: crazygames.com/game/...
   if (input.includes('crazygames.com/game/')) {
     try {
       const u = new URL(input);
@@ -105,7 +135,10 @@ function launchGame() {
       alert('❌ Invalid CrazyGames URL.');
       return;
     }
-  } else if (input.includes('games.crazygames.com')) {
+  }
+
+  // Case 2: direct games.crazygames.com link
+  else if (input.includes('games.crazygames.com')) {
     url = input;
     try {
       const parts = new URL(input).pathname.split('/');
@@ -115,7 +148,10 @@ function launchGame() {
     } catch {
       title = 'Custom Game';
     }
-  } else {
+  }
+
+  // Case 3: plain game name
+  else {
     const slug = input.toLowerCase().replace(/\s+/g, '-');
     url = `https://games.crazygames.com/en_US/${slug}/index.html`;
     title = input.replace(/\b\w/g, c => c.toUpperCase());
@@ -123,25 +159,39 @@ function launchGame() {
 
   $('gameFrame').src = url;
   $('currentGame').textContent = title;
-  console.log('🎮 Loading:', title, '→', url);
+  console.log(`🎮 Loading ${title}: ${url}`);
 }
 
-// Events
+// -----------------------------
+// EVENT LISTENERS
+// -----------------------------
 document.addEventListener('DOMContentLoaded', () => {
   $('accessCode').focus();
 
   $('enterBtn').addEventListener('click', checkCode);
-  $('accessCode').addEventListener('keydown', (e) => { if (e.key === 'Enter') checkCode(); });
+  $('accessCode').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') checkCode();
+  });
 
   $('launchButton').addEventListener('click', launchGame);
-  $('gameName').addEventListener('keydown', (e) => { if (e.key === 'Enter') launchGame(); });
+  $('gameName').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') launchGame();
+  });
 
   document.querySelectorAll('[data-back]').forEach(btn => btn.addEventListener('click', showLogin));
 
   showLogin();
 
-  // Safety tip if leaving
-  window.addEventListener('beforeunload', (e) => {
-    if (currentPage !== 'login') { e.preventDefault(); e.returnValue = ''; }
-  });
+  console.log('%c✅ Launcher Ready', 'color:#4fc3f7;font-size:18px;font-weight:bold;');
+  console.log('%cCrazyGames scrolls & CloudMoon popups disabled.', 'color:#ff6b6b;');
+});
+
+// -----------------------------
+// CONFIRM BEFORE EXIT
+// -----------------------------
+window.addEventListener('beforeunload', (e) => {
+  if (currentPage !== 'login') {
+    e.preventDefault();
+    e.returnValue = '';
+  }
 });
