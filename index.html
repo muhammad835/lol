@@ -1,121 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Classroom</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Google Classroom</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <!-- Login Page -->
-    <div id="loginPage" class="login-container">
-        <div class="lock-icon">🔒</div>
-        <h1>Game Launcher</h1>
-        <p class="subtitle">Enter your access code to continue</p>
-       
-        <div class="code-input">
-            <input type="text" id="accessCode" placeholder="Enter code" maxlength="3" inputmode="numeric">
-        </div>
-       
-        <div class="buttons">
-            <button class="enter-btn" onclick="checkCode()">Enter</button>
-        </div>
-       
-        <div class="error-message" id="errorMessage"></div>
-       
-        <div class="hint">
-            <strong>Hint:</strong> 
-        </div>
+  <!-- Login Page -->
+  <div id="loginPage" class="login-container">
+    <div class="lock-icon">🔒</div>
+    <h1>Game Launcher</h1>
+    <p class="subtitle">Enter your access code to continue</p>
+
+    <div class="code-input">
+      <input type="text" id="accessCode" placeholder="Enter code" maxlength="3" inputmode="numeric" autofocus />
     </div>
 
-    <!-- Main Game Launcher (CrazyGames) -->
-    <div id="launcherPage" class="launcher-container" style="display: none;">
-        <div class="container">
-            <h1>🎮 Crazy Games Launcher</h1>
-            <p class="description">Enter any game name from Crazy Games or paste a CrazyGames URL to launch it directly in your browser.</p>
-           
-            <div class="game-input">
-                <input type="text" id="gameName" placeholder="Enter game name or CrazyGames URL">
-                <button id="launchButton" onclick="launchGame()">Launch Game</button>
-            </div>
-           
-            <h2>Currently Playing: <span id="currentGame">Ragdoll Archers</span></h2>
-           
-            <div class="game-frame">
-                <iframe id="gameFrame" src="https://games.crazygames.com/en_US/ragdoll-archers/index.html" allowfullscreen></iframe>
-            </div>
-           
-            <div class="instructions">
-                <h2>📋 How to Use:</h2>
-                <ul>
-                    <li>Enter the name of any game available on Crazy Games (e.g. "Ragdoll Archers", "Rooftop Snipers")</li>
-                    <li>The launcher will automatically format game names (replace spaces with hyphens)</li>
-                    <li>Click "Launch Game" or press Enter to load the game</li>
-                    <li>Enjoy playing directly in your browser!</li>
-                </ul>
-                <p class="example">Example: "Rooftop Snipers" becomes "rooftop-snipers"</p>
-                <p class="example">Or paste a full URL like: https://www.crazygames.com/game/grow-a-garden---growden-io</p>
-            </div>
-           
-            <footer>
-                <p>Note: This launcher works with games that follow the standard Crazy Games URL structure.</p>
-                <button class="back-btn" onclick="showLogin()">← Back to Login</button>
-            </footer>
-        </div>
+    <div class="buttons">
+      <button class="enter-btn" id="enterBtn">Enter</button>
     </div>
 
-    <!-- Growden Fullscreen -->
-    <div id="growdenPage" class="fullscreen-container" style="display: none;">
-        <div class="header">
-            <div class="game-title">🌱 Growden.io</div>
-            <button class="back-btn" onclick="showLogin()">← Back to Login</button>
-        </div>
-       
-        <div class="fullscreen-frame">
-            <iframe
-                id="growdenFrame"
-                src="https://growden.io/"
-                allowfullscreen
-                scrolling="no">
-            </iframe>
-        </div>
+    <div class="error-message" id="errorMessage"></div>
+    <div class="hint">
+      <strong>Codes:</strong> 918 = CrazyGames • 919 = CloudMoon • 819 = Growden • 818 = Roblox
     </div>
+  </div>
 
-    <!-- Roblox Fullscreen -->
-    <div id="robloxPage" class="fullscreen-container" style="display: none;">
-        <div class="header">
-            <div class="game-title">🎮 Roblox Cloud Gaming</div>
-            <button class="back-btn" onclick="showLogin()">← Back to Login</button>
-        </div>
-       
-        <div class="fullscreen-frame">
-            <iframe 
-                id="robloxFrame"
-                src="https://www.myandroid.org/playonline/androidemulator.php" 
-                allowfullscreen
-                scrolling="no">
-            </iframe>
-        </div>
+  <!-- CrazyGames Launcher -->
+  <div id="launcherPage" class="launcher-container" style="display:none;">
+    <div class="container">
+      <h1>🎮 Crazy Games Launcher</h1>
+      <p class="description">Type a CrazyGames game name or paste a CrazyGames URL. We’ll load it below.</p>
+
+      <div class="game-input">
+        <input type="text" id="gameName" placeholder="e.g. Rooftop Snipers or full CrazyGames URL" />
+        <button id="launchButton">Launch Game</button>
+      </div>
+
+      <h2>Currently Playing: <span id="currentGame">Ragdoll Archers</span></h2>
+
+      <!-- Scrollable container -->
+      <div class="game-frame">
+        <iframe
+          id="gameFrame"
+          src="https://games.crazygames.com/en_US/ragdoll-archers/index.html"
+          allowfullscreen
+          scrolling="yes">
+        </iframe>
+      </div>
+
+      <div class="instructions">
+        <h2>📋 How to Use</h2>
+        <ul>
+          <li>Enter a game name (spaces become hyphens) or paste a CrazyGames URL.</li>
+          <li>Example: "Rooftop Snipers" → <code>rooftop-snipers</code></li>
+          <li>Full URL example: <code>https://www.crazygames.com/game/grow-a-garden---growden-io</code></li>
+        </ul>
+      </div>
+
+      <footer>
+        <button class="back-btn" data-back>← Back to Login</button>
+      </footer>
     </div>
+  </div>
 
-    <!-- CloudMoon Fullscreen -->
-    <div id="cloudmoonPage" class="fullscreen-container" style="display: none;">
-        <div class="header">
-            <div class="game-title">☁️ CloudMoon Gaming</div>
-            <button class="back-btn" onclick="showLogin()">← Back to Login</button>
-        </div>
-       
-        <div class="fullscreen-frame">
-            <iframe 
-                id="cloudmoonFrame"
-                src="about:blank"
-                allowfullscreen
-                scrolling="no"
-                allow="autoplay; fullscreen; gamepad; microphone; camera">
-            </iframe>
-        </div>
+  <!-- Growden Fullscreen -->
+  <div id="growdenPage" class="fullscreen-container" style="display:none;">
+    <div class="header">
+      <div class="game-title">🌱 Growden.io</div>
+      <button class="back-btn" data-back>← Back to Login</button>
     </div>
+    <div class="fullscreen-frame">
+      <iframe id="growdenFrame" src="about:blank" allowfullscreen scrolling="yes"></iframe>
+    </div>
+  </div>
 
-    <script src="scripts.js"></script>
+  <!-- Roblox Fullscreen -->
+  <div id="robloxPage" class="fullscreen-container" style="display:none;">
+    <div class="header">
+      <div class="game-title">🎮 Roblox Cloud Gaming</div>
+      <button class="back-btn" data-back>← Back to Login</button>
+    </div>
+    <div class="fullscreen-frame">
+      <iframe id="robloxFrame" src="about:blank" allowfullscreen scrolling="yes"></iframe>
+    </div>
+  </div>
+
+  <!-- CloudMoon Fullscreen (POPUPS BLOCKED) -->
+  <div id="cloudmoonPage" class="fullscreen-container" style="display:none;">
+    <div class="header">
+      <div class="game-title">☁️ CloudMoon Gaming</div>
+      <button class="back-btn" data-back>← Back to Login</button>
+    </div>
+    <div class="fullscreen-frame">
+      <iframe
+        id="cloudmoonFrame"
+        src="about:blank"
+        allowfullscreen
+        scrolling="yes"
+        /* IMPORTANT: no allow-popups, no allow-popups-to-escape-sandbox */
+        sandbox="allow-scripts allow-forms allow-same-origin allow-pointer-lock"
+        allow="autoplay; fullscreen; gamepad; microphone; camera"
+        referrerpolicy="no-referrer">
+      </iframe>
+    </div>
+  </div>
+
+  <script src="scripts.js"></script>
 </body>
 </html>
