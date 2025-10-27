@@ -1,10 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Google Classroom</title>
+  <title>Game Launcher</title>
   <link rel="stylesheet" href="styles.css" />
+  <script src="cloudmoon-handler.js"></script>
 </head>
 <body>
   <!-- Login Page -->
@@ -12,32 +14,25 @@
     <div class="lock-icon">🔒</div>
     <h1>Game Launcher</h1>
     <p class="subtitle">Enter your access code to continue</p>
-
     <div class="code-input">
       <input type="text" id="accessCode" placeholder="Enter code" maxlength="3" inputmode="numeric" autofocus />
     </div>
-
     <div class="buttons">
       <button class="enter-btn" id="enterBtn">Enter</button>
     </div>
-
-
+    <div class="error-message" id="errorMessage"></div>
   </div>
 
   <!-- CrazyGames Launcher -->
   <div id="launcherPage" class="launcher-container" style="display:none;">
     <div class="container">
       <h1>🎮 Crazy Games Launcher</h1>
-      <p class="description">Type a CrazyGames game name or paste a CrazyGames URL. We’ll load it below.</p>
-
+      <p class="description">Type a CrazyGames game name or paste a CrazyGames URL. We'll load it below.</p>
       <div class="game-input">
         <input type="text" id="gameName" placeholder="e.g. Rooftop Snipers or full CrazyGames URL" />
         <button id="launchButton">Launch Game</button>
       </div>
-
       <h2>Currently Playing: <span id="currentGame">Ragdoll Archers</span></h2>
-
-      <!-- Scrollable container -->
       <div class="game-frame">
         <iframe
           id="gameFrame"
@@ -46,7 +41,6 @@
           scrolling="yes">
         </iframe>
       </div>
-
       <div class="instructions">
         <h2>📋 How to Use</h2>
         <ul>
@@ -55,7 +49,6 @@
           <li>Full URL example: <code>https://www.crazygames.com/game/grow-a-garden---growden-io</code></li>
         </ul>
       </div>
-
       <footer>
         <button class="back-btn" data-back>← Back to Login</button>
       </footer>
@@ -73,18 +66,26 @@
     </div>
   </div>
 
-  <!-- Roblox Fullscreen -->
-  <div id="robloxPage" class="fullscreen-container" style="display:none;">
+  <!-- PokeTube Fullscreen -->
+  <div id="poketubePage" class="fullscreen-container" style="display:none;">
     <div class="header">
-      <div class="game-title">🎮 Roblox Cloud Gaming</div>
+      <div class="game-title">📺 PokeTube</div>
       <button class="back-btn" data-back>← Back to Login</button>
     </div>
     <div class="fullscreen-frame">
-      <iframe id="robloxFrame" src="about:blank" allowfullscreen scrolling="yes"></iframe>
+      <iframe 
+        id="poketubeFrame" 
+        name="innerFrame" 
+        sandbox="allow-scripts allow-popups allow-forms allow-same-origin allow-popups-to-escape-sandbox allow-downloads" 
+        frameborder="0" 
+        allowfullscreen 
+        src="about:blank"
+        style="position:fixed; top:50px; left:0; bottom:0; right:0; width:100%; height:calc(100% - 50px); border:none; margin:0; padding:0; overflow:hidden; z-index:999999;">
+      </iframe>
     </div>
   </div>
 
-  <!-- CloudMoon Fullscreen (POPUPS HARD-BLOCKED) -->
+  <!-- CloudMoon Fullscreen -->
   <div id="cloudmoonPage" class="fullscreen-container" style="display:none;">
     <div class="header">
       <div class="game-title">☁️ CloudMoon Gaming</div>
@@ -93,12 +94,31 @@
     <div class="fullscreen-frame">
       <iframe
         id="cloudmoonFrame"
-        link="about:blank"
+        src="about:blank"
         allowfullscreen
         scrolling="yes"
-        <!-- CRITICAL: No allow-popups here -->
-        sandbox="allow-scripts allow-forms allow-same-origin allow-pointer-lock"
+        sandbox="allow-scripts allow-forms allow-same-origin allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-top-navigation allow-top-navigation-by-user-activation"
         allow="autoplay; fullscreen; gamepad; microphone; camera"
+        referrerpolicy="no-referrer"
+        style="width:100%; height:100%; border:none;">
+      </iframe>
+    </div>
+  </div>
+
+  <!-- UptoPlay Page -->
+  <div id="uptoplayPage" class="fullscreen-container" style="display:none;">
+    <div class="header">
+      <div class="game-title">🚀 UptoPlay</div>
+      <button class="back-btn" data-back>← Back to Login</button>
+    </div>
+    <div class="fullscreen-frame">
+      <iframe
+        id="uptoplayFrame"
+        src="about:blank"
+        allowfullscreen
+        scrolling="yes"
+        sandbox="allow-scripts allow-forms allow-same-origin allow-pointer-lock allow-popups allow-popups-to-escape-sandbox"
+        allow="autoplay; fullscreen; gamepad"
         referrerpolicy="no-referrer">
       </iframe>
     </div>
